@@ -18,8 +18,8 @@
 
  - [Web-интерфейс](https://github.com/betepok506/aerial_photo_web_interface)
  - [API карт](https://github.com/betepok506/map_api)
- - [Backend](Текущий репозиторий)
- - [Детектор пожаров](В разработке)
+ - Backend(Текущий репозиторий)
+ - Детектор пожаров (В разработке)
 # 3. Запуск
 
 # 3.1 Запуск
