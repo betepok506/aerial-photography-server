@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  aerial-photography-db:
+    image: postgis/postgis:15-3.3-alpine
+#    build:
+#      context: ./../../
+#      dockerfile: ./docker/server/db.Dockerfile
+    ports:
+      - '6500:5432'
+    restart: always
+    volumes:
+      - aerial-photography-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+volumes:
+  aerial-photography-db-data:

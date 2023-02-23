@@ -1,0 +1,8 @@
+sqlalchemy
+fastapi
+uvicorn
+fastapi_health
+alembic
+psycopg2
+geoalchemy2
+shapely

@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  migrations:
+    build:
+      context: ./../../
+      dockerfile: ./docker/migrations/Dockerfile
+    volumes:
+      - ../../migrations/:/app/migrations
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
