@@ -1,7 +1,19 @@
 import sqlalchemy
+from sqlalchemy.sql import func
+from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (
-    Column, Enum, Integer, MetaData, SmallInteger, String, Table, Boolean, Float
+    Column,
+    Enum,
+    Integer,
+    MetaData,
+    SmallInteger,
+    String,
+    Table,
+    Boolean,
+    Float,
+    DateTime,
+    ForeignKey
 )
 from geoalchemy2 import Geometry, Geography
 
@@ -71,3 +83,64 @@ class ClassObjectDisplay(Base):
     line_width = Column('line_width', Integer)
     polygon_transparency = Column('polygon_transparency', Float)
     clickability = Column('clickability', Boolean, default=True)
+
+
+class Maps(Base):
+    __tablename__ = "maps"
+
+    id = Column('id', Integer, primary_key=True)
+    name = Column('name', String(80), nullable=None)
+    md5 = Column('md5', String(34), nullable=None)
+    relationship_maps2tiles = relationship(
+        "Tiles",
+        back_populates="relationship_tiles2maps"
+    )
+
+
+class Tiles(Base):
+    __tablename__ = "tiles"
+
+    id = Column('id', Integer, primary_key=True)
+    map_id = Column("map_id", Integer, ForeignKey("maps.id"))
+    x = Column("x", Integer)
+    y = Column("y", Integer)
+    z = Column("z", Integer)
+    loading_time = Column("loading_time", DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    deleted = Column("deleted", Boolean, default=False)
+    relationship_tiles2detected_objects = relationship(
+        "DetectedObjects",
+        back_populates="relationship_detected_objects2tiles"
+    )
+    relationship_tiles2maps = relationship(
+        "Maps",
+        back_populates="relationship_maps2tiles"
+    )
+
+
+class NeuralNetwork(Base):
+    __tablename__ = "neural_network"
+
+    id = Column('id', Integer, primary_key=True)
+    name_neural_network = Column("name_neural_network", String(80))
+    relationship_neural_network2detected_objects = relationship(
+        "DetectedObjects",
+        back_populates="relationship_detected_objects2neural_network"
+    )
+
+
+class DetectedObjects(Base):
+    __tablename__ = "detected_objects"
+
+    id = Column('id', Integer, primary_key=True)
+    tile_id = Column("tile_id", Integer, ForeignKey("tiles.id"))
+    neural_network_id = Column("neural_network_id", Integer, ForeignKey("neural_network.id"))
+    wkb_geometry = Column('wkb_geometry', Geometry('POLYGON'))
+    attributes_id = Column("attributes_id", Integer)
+    relationship_detected_objects2tiles = relationship(
+        "Tiles",
+        back_populates="relationship_tiles2detected_objects"
+    )
+    relationship_detected_objects2neural_network = relationship(
+        "NeuralNetwork",
+        back_populates="relationship_neural_network2detected_objects"
+    )
