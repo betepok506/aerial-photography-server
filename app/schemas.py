@@ -1,4 +1,4 @@
-from typing import Union, Iterable
+from typing import Union, Iterable, List
 from pydantic import BaseModel
 
 
@@ -11,16 +11,23 @@ class RequestPolygonsObject(BaseModel):
 
 
 class Tile(BaseModel):
-    map_id: int
+    map_name: str
     x: int
     y: int
     z: int
+    image: bytes
 
 
-class Tiles_schemas(BaseModel):
-    tiles: Iterable[Tile]
+class TilesSchemas(BaseModel):
+    tiles: List[Tile]
+
+
+class RequestsRawTiles(BaseModel):
+    map_name: str
+    network_name: str
+    cnt: int
 
 
 class MapInfo(BaseModel):
     map_name: str
-    hash_md5: str
+    # hash_md5: str

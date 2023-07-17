@@ -6,6 +6,7 @@ from sqlalchemy import (
     Column,
     Enum,
     Integer,
+    LargeBinary,
     MetaData,
     SmallInteger,
     String,
@@ -90,7 +91,7 @@ class Maps(Base):
 
     id = Column('id', Integer, primary_key=True)
     name = Column('name', String(80), nullable=None)
-    md5 = Column('md5', String(34), nullable=None)
+    # md5 = Column('md5', String(34), nullable=None)
     relationship_maps2tiles = relationship(
         "Tiles",
         back_populates="relationship_tiles2maps"
@@ -102,15 +103,16 @@ class Tiles(Base):
 
     id = Column('id', Integer, primary_key=True)
     map_id = Column("map_id", Integer, ForeignKey("maps.id"))
+    image = Column("image", LargeBinary)
     x = Column("x", Integer)
     y = Column("y", Integer)
     z = Column("z", Integer)
     loading_time = Column("loading_time", DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted = Column("deleted", Boolean, default=False)
-    relationship_tiles2detected_objects = relationship(
-        "DetectedObjects",
-        back_populates="relationship_detected_objects2tiles"
-    )
+    # relationship_tiles2detected_objects = relationship(
+    #     "DetectedObjects",
+    #     back_populates="relationship_detected_objects2tiles"
+    # )
     relationship_tiles2maps = relationship(
         "Maps",
         back_populates="relationship_maps2tiles"
@@ -136,10 +138,10 @@ class DetectedObjects(Base):
     neural_network_id = Column("neural_network_id", Integer, ForeignKey("neural_network.id"))
     wkb_geometry = Column('wkb_geometry', Geometry('POLYGON'))
     attributes_id = Column("attributes_id", Integer)
-    relationship_detected_objects2tiles = relationship(
-        "Tiles",
-        back_populates="relationship_tiles2detected_objects"
-    )
+    # relationship_detected_objects2tiles = relationship(
+    #     "Tiles",
+    #     back_populates="relationship_tiles2detected_objects"
+    # )
     relationship_detected_objects2neural_network = relationship(
         "NeuralNetwork",
         back_populates="relationship_neural_network2detected_objects"
