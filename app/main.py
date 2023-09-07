@@ -188,6 +188,22 @@ def merge_image(img1, img2):
     return result
 
 
+def clear_background(img):
+    img_array = np.asarray(img)
+    newImArray = np.empty(img_array.shape, dtype='uint8')
+    # mask = (img_array[:, :] == np.array([0, 0, 0, 255]))
+    # mask = np.all(img_array == (0, 0, 0, 255), axis=0)
+    mask = np.logical_and.reduce((img_array[:, :, 0] == 0,
+                                  img_array[:, :, 1] == 0,
+                                  img_array[:, :, 2] == 0,
+                                  img_array[:, :, 3] == 255))
+    newImArray = img_array.copy()
+    newImArray[mask] = [0, 0, 0, 0]
+
+    result = Image.fromarray(newImArray, "RGBA")
+    return result
+
+
 @app.post("/add_tiles/")
 def add_tiles(tiles: TilesSchemas):
     # TODO: Добавить в таблицу Maps счетчик tiles для восстановления добавления
@@ -197,10 +213,12 @@ def add_tiles(tiles: TilesSchemas):
     for tile in tiles.tiles:
         unique_input_map_name.add(tile.map_name)
 
+    mapsname2mapsid = {}
     # Запрашиваем карты в бд, возвращает найденные
     query = db.query(Maps).filter(Maps.name.in_(list(unique_input_map_name))).all()
     unique_found_maps = set()
     for cur_map_name in query:
+        mapsname2mapsid[cur_map_name.name] = cur_map_name.id
         unique_found_maps.add(cur_map_name.name)
 
     # Находим карты, которые отсутствуют в БД
@@ -221,9 +239,9 @@ def add_tiles(tiles: TilesSchemas):
 
     coords = []
     for tile in tiles.tiles:
-        coords.append([tile.x, tile.y, tile.z])
+        coords.append([mapsname2mapsid[tile.map_name], tile.x, tile.y, tile.z])
 
-    query_tiles_added = db.query(Tiles).where(tuple_(Tiles.x, Tiles.y, Tiles.z).in_(coords)).all()
+    query_tiles_added = db.query(Tiles).where(tuple_(Tiles.map_id, Tiles.x, Tiles.y, Tiles.z).in_(coords)).all()
     tiles_upgrade = []
     tiles_added = []
     # Смержить все, что нашел в query
@@ -252,9 +270,15 @@ def add_tiles(tiles: TilesSchemas):
 
                 break
         else:
+            clear_image = clear_background(Image.open(io.BytesIO(base64.b64decode(tile.image))))
+            img_byte_arr = io.BytesIO()
+            clear_image.save(img_byte_arr, format='PNG')
+            img_byte_arr = img_byte_arr.getvalue()
+            result_im_b64 = base64.b64encode(img_byte_arr).decode("utf8")
+
             new_tiles_array.append({
                 "map_id": map_name2map_id[tile.map_name],
-                "image": tile.image,
+                "image": result_im_b64.encode("utf-8"),
                 "x": tile.x,
                 "y": tile.y,
                 "z": tile.z})
@@ -364,17 +388,15 @@ def get_raw_tiles(body: RequestsRawTiles):
     if not len(maps_query):
         return Response(content="Map not found!")
 
-    query = db.query(Tiles).where(Tiles.map_id == maps_query[0].id and Tiles.deleted is False).limit(body.cnt)
+    query = db.query(Tiles).where(and_(Tiles.map_id == int(maps_query[0].id), Tiles.deleted == False)).limit(body.cnt)
     tiles = []
     tiles_upgrade = []
     for cur_row in query:
         tiles.append({
-            "id": cur_row.id,
             "image": base64.b64encode(cur_row.image).decode('utf-8'),
             "x": cur_row.x,
             "y": cur_row.y,
             "z": cur_row.z,
-            'deleted': True
         })
         tiles_upgrade.append({
             "id": cur_row.id,
