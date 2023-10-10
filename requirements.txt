@@ -3,7 +3,13 @@ fastapi
 uvicorn
 fastapi_health
 alembic
-psycopg2
+asyncpg
 geoalchemy2
 shapely
 pillow
+pydantic-settings
+
+# Testing
+pytest
+pytest-cov
+pytest_asyncio

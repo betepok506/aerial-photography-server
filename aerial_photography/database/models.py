@@ -2,8 +2,10 @@ import sqlalchemy
 from sqlalchemy.sql import func
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.ext.declarative import declarative_base
+from aerial_photography.database.base_class import Base
 from sqlalchemy import (
     Column,
+    ARRAY,
     Enum,
     Integer,
     LargeBinary,
@@ -17,8 +19,14 @@ from sqlalchemy import (
     ForeignKey
 )
 from geoalchemy2 import Geometry, Geography
+from sqlalchemy.orm import DeclarativeBase
 
-Base = declarative_base()
+
+# TODO: Разобраться с вызовов after_create 2 раза
+# Base = declarative_base()
+
+# class Base(DeclarativeBase):
+#     pass
 
 
 # users_table = Table(
@@ -146,3 +154,29 @@ class DetectedObjects(Base):
         "NeuralNetwork",
         back_populates="relationship_neural_network2detected_objects"
     )
+
+
+class PolygonsToSearchFor(Base):
+    __tablename__ = "polygons_to_search_for"
+
+    id = Column('id', Integer, primary_key=True)
+    platform_name = Column('platform_name', Integer, ForeignKey("platform_name_sentinel.id"))
+    collection = Column('collection', Integer, ForeignKey("collection_sentinel.id"))
+
+    footprint = Column('footprint', Geometry('POLYGON'))
+    cloud_cover_percentage = Column("cloud_cover_percentage", ARRAY(Integer))
+    date = Column("date", DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class CollectionSentinel(Base):
+    __tablename__ = "collection_sentinel"
+
+    id = Column('id', Integer, primary_key=True)
+    name = Column('name', String(60))
+
+
+# class PlatformNameSentinel(Base):
+#     __tablename__ = "platform_name_sentinel"
+#
+#     id = Column('id', Integer, primary_key=True)
+#     name = Column('name', String(60))
