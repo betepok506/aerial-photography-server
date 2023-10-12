@@ -1,13 +1,3 @@
-import uuid
-
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
-from shapely import geometry
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.responses import JSONResponse
-from aerial_photography.api.schemas import polygon
-from aerial_photography.database import models as db_models
 # from aerial_photography.database.session import get_db_session
 #
 # router = APIRouter(prefix="/v1", tags=["v1"])

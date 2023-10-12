@@ -1,11 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 import pytest_asyncio
-from aerial_photography.api import crud
+import pytest
+from aerial_photography import crud
 from aerial_photography.tests.utils.utils import random_lower_string
-from aerial_photography.api.schemas.platform_name_sentinel import PlatformNameSentinelCreate, PlatformNameSentinelUpdate
+from aerial_photography.schemas.platform_name_sentinel import PlatformNameSentinelCreate, PlatformNameSentinelUpdate
 
 
-@pytest_asyncio.fixture
+@pytest.mark.asyncio
 async def test_create_platform_name_sentinel(db: AsyncSession) -> None:
     platform_name = random_lower_string()
     platform_name_in = PlatformNameSentinelCreate(name=platform_name)
@@ -13,7 +14,7 @@ async def test_create_platform_name_sentinel(db: AsyncSession) -> None:
     assert platform.name == platform_name
 
 
-@pytest_asyncio.fixture
+@pytest.mark.asyncio
 async def test_get_platform_name_sentinel(db: AsyncSession) -> None:
     platform_name = random_lower_string()
     platform_name_in = PlatformNameSentinelCreate(name=platform_name)
@@ -24,7 +25,7 @@ async def test_get_platform_name_sentinel(db: AsyncSession) -> None:
     assert platform.name == stored_platform.name
 
 
-@pytest_asyncio.fixture
+@pytest.mark.asyncio
 async def test_update_platform_name_sentinel(db: AsyncSession) -> None:
     platform_name = random_lower_string()
     platform_name_in = PlatformNameSentinelCreate(name=platform_name)
@@ -37,7 +38,7 @@ async def test_update_platform_name_sentinel(db: AsyncSession) -> None:
     assert updated_platform.name == new_platform
 
 
-@pytest_asyncio.fixture
+@pytest.mark.asyncio
 async def test_delete_platform_name_sentinel(db: AsyncSession) -> None:
     platform_name = random_lower_string()
     platform_name_in = PlatformNameSentinelCreate(name=platform_name)

@@ -8,6 +8,11 @@ geoalchemy2
 shapely
 pillow
 pydantic-settings
+httpx
+
+
+# Retry
+tenacity
 
 # Testing
 pytest

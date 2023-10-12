@@ -63,3 +63,6 @@ alembic revision --message=<YOUR MESSAGE> --autogenerate
 ```
 Если структура вашей базы отличается от моделей, после выполнения команды будет сгенерирован файл  в `./migrations/versions/`.
 Этот файл необходимо добавить в проект
+
+# Возможные ошибки:
+ - Не запускаются тесты, пишет что скрипт запуска не найден [ссылка](https://stackoverflow.com/questions/55131660/docker-exec-cannot-execute-script-inside-container)
