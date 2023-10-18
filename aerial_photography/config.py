@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = SQLALCHEMY_DATABASE_URL
 
-    class Config:
+    class ConfigDict:
         env_file = ".env"
         case_sensitive = True
 

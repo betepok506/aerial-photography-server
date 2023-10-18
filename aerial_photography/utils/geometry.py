@@ -24,11 +24,9 @@ def convert_polygon_to_str(polygon_coordinates: List[Tuple[float, float]]):
     '''
     polygon = Polygon(polygon_coordinates)
     return str(polygon)
-    # wkb_format = from_shape(polygon, 4326)
-    # return wkb_format
 
 
-def convert_str_to_wkb(str_polygon: str):
+def convert_str_to_wkb(str_polygon: str) -> WKBElement:
     wkb_format = from_shape(shapely.wkt.loads(str_polygon), 4326)
     return wkb_format
 
