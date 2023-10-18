@@ -5,7 +5,8 @@ import uvicorn
 from aerial_photography.config import settings
 from aerial_photography.utils.initial_default_db import (
     initial_table_platform_name_sentinel,
-    initial_table_type_polygons_to_search_for)
+    initial_table_type_polygons_to_search_for
+)
 from aerial_photography.database.base_class import Base
 from aerial_photography.database.session import engine, SessionLocal
 
@@ -21,10 +22,14 @@ from aerial_photography.database.session import engine, SessionLocal
 # engine = create_async_engine(settings.DATABASE_URL, pool_pre_ping=True)
 # SessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession)
 
+# ======== Async ============
+# async def create_db_and_tables():
+#     async with engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.create_all)
 
-async def create_db_and_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+# ======== Sync ============
+def create_db_and_tables():
+    Base.metadata.create_all(bind=engine)
 
 
 # @event.listens_for(PlatformNameSentinel.__table__, 'after_create')
@@ -50,23 +55,32 @@ app = FastAPI(
 # app.include_router(v1_router, prefix="/api")
 # aerial_photography.include_router(v2_router, prefix="/api")
 
+# ======== Async ============
+# @app.on_event("startup")
+# async def initial_db():
+#     session = SessionLocal()
+#     await create_db_and_tables()
+#     await initial_table_platform_name_sentinel(session)
+#     await initial_table_type_polygons_to_search_for(session)
+# await crud.platform_name_sentinel.create(db=session, obj_in=schemas.PlatformNameSentinelCreate(name='test_create2'))
+# print(await crud.platform_name_sentinel.get(db=session, id=1))
+# tt = await crud.platform_name_sentinel.get(db=session, id=7)
+# print(await crud.platform_name_sentinel.remove(db=session, id=1))
+
+# await crud.platform_name_sentinel.update(db=session,
+#                                          db_obj=tt,
+#                                          obj_in=schemas.PlatformNameSentinel(name='gg'))
+
+# print('Initialization completed successfully!')
+# models.Base.metadata.create_all(bind=engine)
+
 @app.on_event("startup")
-async def initial_db():
+def initial_db():
     session = SessionLocal()
-    await create_db_and_tables()
-    await initial_table_platform_name_sentinel(session)
-    await initial_table_type_polygons_to_search_for(session)
-    # await crud.platform_name_sentinel.create(db=session, obj_in=schemas.PlatformNameSentinelCreate(name='test_create2'))
-    # print(await crud.platform_name_sentinel.get(db=session, id=1))
-    # tt = await crud.platform_name_sentinel.get(db=session, id=7)
-    # print(await crud.platform_name_sentinel.remove(db=session, id=1))
+    create_db_and_tables()
+    initial_table_platform_name_sentinel(session)
+    initial_table_type_polygons_to_search_for(session)
 
-    # await crud.platform_name_sentinel.update(db=session,
-    #                                          db_obj=tt,
-    #                                          obj_in=schemas.PlatformNameSentinel(name='gg'))
-
-    print('Initialization completed successfully!')
-    # models.Base.metadata.create_all(bind=engine)
 
 # TODO: Добавить реконнект в случае ошибки с базой через retry
 # TODO: Добавить закрытие соединения после завершения транзакции

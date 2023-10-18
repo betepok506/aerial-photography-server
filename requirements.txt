@@ -3,12 +3,18 @@ fastapi
 uvicorn
 fastapi_health
 alembic
-asyncpg
 geoalchemy2
 shapely
 pillow
 pydantic-settings
 httpx
+
+# Async Postgres
+# asyncpg
+
+# Sync PG
+psycopg2-binary
+# psycopg2
 
 
 # Retry

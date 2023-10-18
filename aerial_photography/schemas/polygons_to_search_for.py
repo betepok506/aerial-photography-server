@@ -7,23 +7,20 @@ class PolygonsToSearchFor(BaseModel):
     platform_name: int
 
 
-class PolygonsToSearchForUpdate(PolygonsToSearchFor):
-    id: int
-    footprint: str
-    cloud_cover_percentage: List[Tuple[int, int]]
-    date: datetime
-    type_polygon: int
-
-
 class PolygonsToSearchForCreate(PolygonsToSearchFor):
     footprint: str
-    cloud_cover_percentage: List[Tuple[int, int]]
+    cloud_cover_percentage: List[int]
     date: datetime
     type_polygon: int
+    # TODO: Добавить валидацию на длину cloud_cover_percentage == 2
 
 
-class PolygonsToSearchForSearch(PolygonsToSearchFor):
-    pass
+class PolygonsToSearchForUpdate(PolygonsToSearchForCreate):
+    id: int
+
+
+class PolygonsToSearchForSearch(BaseModel):
+    platform_name: str
 
 
 class PolygonsToSearchForById(BaseModel):

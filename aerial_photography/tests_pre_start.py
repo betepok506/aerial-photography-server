@@ -1,7 +1,8 @@
 import logging
-
+import asyncio
+from sqlalchemy.sql import text
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
-
+from aerial_photography.app import create_db_and_tables, initial_db
 from aerial_photography.database.session import SessionLocal
 
 logging.basicConfig(level=logging.INFO)
@@ -21,17 +22,44 @@ wait_seconds = 1
 #     try:
 #         # Try to create session to check if DB is awake
 #         db = SessionLocal()
-#         db.execute("SELECT 1")
+#         await db.execute(text("SELECT 1"))
 #     except Exception as e:
 #         logger.error(e)
 #         raise e
 #
 #
-# async def main() -> None:
+# def main() -> None:
 #     logger.info("Initializing service")
-#     await init()
+#     asyncio.run(init())
 #     logger.info("Service finished initializing")
+# #
+
+@retry(
+    stop=stop_after_attempt(max_tries),
+    wait=wait_fixed(wait_seconds),
+    before=before_log(logger, logging.INFO),
+    after=after_log(logger, logging.WARN),
+)
+def init() -> None:
+    try:
+        # Try to create session to check if DB is awake
+        db = SessionLocal()
+        db.execute(text("SELECT 1"))
+    except Exception as e:
+        logger.error(e)
+        raise e
+
+
+def main() -> None:
+    logger.info("Initializing service")
+    init()
+    # create_db_and_tables()
+    initial_db()
+    logger.info("Service finished initializing")
+
+
 #
 #
-# if __name__ == "__main__":
-#     await main()
+if __name__ == "__main__":
+    main()
+    # await main()

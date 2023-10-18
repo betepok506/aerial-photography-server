@@ -1,12 +1,15 @@
 '''
 Данный модуль содержит вспомогательные функции для работы с геометрией
 '''
-from geoalchemy2.shape import from_shape
+from geoalchemy2.shape import from_shape, to_shape
 from shapely.geometry import Polygon
 from typing import List, Tuple
+import shapely
+import shapely.wkt
+from geoalchemy2.elements import WKBElement
 
 
-def convert_wkb(polygon_coordinates: List[Tuple[float, float]]):
+def convert_polygon_to_str(polygon_coordinates: List[Tuple[float, float]]):
     '''
     Функция производит преобразование географических координат в wkb формат
 
@@ -20,5 +23,15 @@ def convert_wkb(polygon_coordinates: List[Tuple[float, float]]):
         `str` полигон, преобразованный в wkb формат
     '''
     polygon = Polygon(polygon_coordinates)
-    wkb_format = from_shape(polygon, 4326)
+    return str(polygon)
+    # wkb_format = from_shape(polygon, 4326)
+    # return wkb_format
+
+
+def convert_str_to_wkb(str_polygon: str):
+    wkb_format = from_shape(shapely.wkt.loads(str_polygon), 4326)
     return wkb_format
+
+
+def convert_wkb_to_str(wkb: WKBElement) -> str:
+    return str(to_shape(wkb))

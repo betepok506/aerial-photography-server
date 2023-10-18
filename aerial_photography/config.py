@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", 'postgres')
     DATABASE_URI: str = os.getenv('DATABASE_URI', 'localhost:6500')
     POSTGRES_USER: str = os.getenv('POSTGRES_USER', 'postgres')
-    SQLALCHEMY_DATABASE_URL: str = f"postgresql+asyncpg://postgres:postgres@{DATABASE_URI}/{POSTGRES_PASSWORD}"
+    # SQLALCHEMY_DATABASE_URL: str = f"postgresql+asyncpg://postgres:postgres@{DATABASE_URI}/{POSTGRES_PASSWORD}"
+    SQLALCHEMY_DATABASE_URL: str = f"postgresql://postgres:postgres@{DATABASE_URI}/{POSTGRES_PASSWORD}"
 
     # Database
     DATABASE_URL: str = SQLALCHEMY_DATABASE_URL

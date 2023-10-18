@@ -6,6 +6,9 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 # from sqlalchemy import MetaData
 # from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from aerial_photography.config import settings
@@ -14,8 +17,17 @@ from aerial_photography.config import settings
 
 # engine = create_async_engine(settings.DATABASE_URL)
 
-engine = create_async_engine(settings.DATABASE_URL,  pool_pre_ping=True)
-SessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession)
+# ======== Sync ============
+
+engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# ======== Async ============
+# engine = create_async_engine(settings.DATABASE_URL,  pool_pre_ping=True)
+# SessionLocal = async_sessionmaker(autocommit=False, autoflush=False,bind=engine, class_=AsyncSession)
+
+# ======== End ============
+
 
 # metadata = MetaData()
 # Base = declarative_base(metadata=metadata)

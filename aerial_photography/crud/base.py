@@ -3,8 +3,8 @@ from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import select, update
-# from sqlalchemy.orm import Session
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
+# from sqlalchemy.ext.asyncio import AsyncSession
 
 from aerial_photography.database.base_class import Base
 
@@ -26,33 +26,33 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         self.model = model
 
-    async def get(self, db: AsyncSession, id: Any) -> Optional[ModelType]:
-        result = await db.scalars(select(self.model).filter(self.model.id == id).limit(1))
+    def get(self, db: Session, id: Any) -> Optional[ModelType]:
+        result = db.scalars(select(self.model).filter(self.model.id == id).limit(1))
         result = [item for item in result]
         if len(result) == 0:
             return None
         return result[0]
         # return db.query(self.model).filter(self.model.id == id).first()
 
-    async def get_multi(
-            self, db: AsyncSession, *, skip: int = 0, limit: int = 100
+    def get_multi(
+            self, db: Session, *, skip: int = 0, limit: int = 100
     ) -> List[ModelType]:
         # return db.query(self.model).offset(skip).limit(limit).all()
-        result = await db.scalars(select(self.model).offset(skip).limit(limit))
+        result = db.scalars(select(self.model).offset(skip).limit(limit))
         result = [item for item in result]
         return result
 
-    async def create(self, db: AsyncSession, *, obj_in: CreateSchemaType) -> ModelType:
+    def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
-        await db.commit()
-        await db.refresh(db_obj)
+        db.commit()
+        db.refresh(db_obj)
         return db_obj
 
-    async def update(
+    def update(
             self,
-            db: AsyncSession,
+            db: Session,
             *,
             db_obj: ModelType,
             obj_in: Union[UpdateSchemaType, Dict[str, Any]]
@@ -71,16 +71,16 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         # json_db_obj.pop('id', None)
         # await db.execute(update(self.model).values(**json_db_obj).filter_by(id=db_obj.id))
         db.add(db_obj)
-        await db.commit()
-        await db.refresh(db_obj)
+        db.commit()
+        db.refresh(db_obj)
         return db_obj
 
-    async def remove(self, db: AsyncSession, *, id: int) -> Union[ModelType, None]:
+    def remove(self, db: Session, *, id: int) -> Union[ModelType, None]:
         # obj = db.query(self.model).get(id)
-        obj = await self.get(db=db, id=id)
+        obj = self.get(db=db, id=id)
         if obj is None:
             return None
 
-        await db.delete(obj)
-        await db.commit()
+        db.delete(obj)
+        db.commit()
         return obj

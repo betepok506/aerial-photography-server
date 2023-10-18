@@ -14,14 +14,21 @@ def db() -> Generator:
     yield SessionLocal()
 
 
-@pytest.fixture
-async def client() -> AsyncGenerator[AsyncClient, Any]:
-    async with AsyncClient() as c:
+@pytest.fixture(scope="module")
+def client() -> Generator:
+    with TestClient(app) as c:
         yield c
 
 
-@pytest.fixture(scope="session")
-def event_loop() -> Generator[asyncio.AbstractEventLoop, Any, None]:
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
+# ====== Async ======
+# @pytest.fixture
+# async def client() -> AsyncGenerator[AsyncClient, Any]:
+#     async with AsyncClient() as c:
+#         yield c
+
+
+# @pytest.fixture(scope="session")
+# def event_loop() -> Generator[asyncio.AbstractEventLoop, Any, None]:
+#     loop = asyncio.get_event_loop()
+#     yield loop
+#     loop.close()
