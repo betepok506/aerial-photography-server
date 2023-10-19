@@ -4,14 +4,14 @@ from pydantic import BaseModel
 
 
 class PolygonsToSearchFor(BaseModel):
-    platform_name: int
+    id_platform_name: int
 
 
 class PolygonsToSearchForCreate(PolygonsToSearchFor):
     footprint: str
     cloud_cover_percentage: List[int]
     date: datetime
-    type_polygon: int
+    id_polygon_type: int
     # TODO: Добавить валидацию на длину cloud_cover_percentage == 2
 
 

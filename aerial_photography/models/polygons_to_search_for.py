@@ -14,8 +14,8 @@ class PolygonsToSearchFor(Base):
     __tablename__ = "polygons_to_search_for"
 
     id = Column('id', Integer, primary_key=True)
-    platform_name = Column('platform_name', Integer, ForeignKey("platform_name_sentinel.id"))
-    type_polygon = Column('type_polygon', Integer, ForeignKey("type_polygons_to_search_for.id"))
+    id_platform_name = Column('id_platform_name', Integer, ForeignKey("platform_name_sentinel.id"))
+    id_polygon_type = Column('id_polygon_type', Integer, ForeignKey("type_polygons_to_search_for.id"))
     # collection = Column('collection', Integer, ForeignKey("collection_sentinel.id"))
 
     footprint = Column('footprint', Geometry('POLYGON'))

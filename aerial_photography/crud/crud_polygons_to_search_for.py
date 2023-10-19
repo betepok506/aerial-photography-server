@@ -58,7 +58,7 @@ class CRUDPolygonsToSearchFor(
 
     def search(self, db: Session, *, obj_in: PolygonsToSearchForSearch) -> List[PolygonsToSearchFor]:
         result = db.scalars(
-            select(PolygonsToSearchFor).where(and_(PolygonsToSearchFor.platform_name == PlatformNameSentinel.id,
+            select(PolygonsToSearchFor).where(and_(PolygonsToSearchFor.id_platform_name == PlatformNameSentinel.id,
                                                    PlatformNameSentinel.name == obj_in.platform_name)))
         return [item for item in result]
 
