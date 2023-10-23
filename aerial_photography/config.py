@@ -8,6 +8,8 @@ logging.basicConfig(level=logging.INFO)
 class Settings(BaseSettings):
     """App settings."""
 
+    API_V1_STR: str = "/api/v1"
+
     PROJECT_NAME: str = "aerial-photography-server"
     DEBUG: bool = False
     ENVIRONMENT: str = "local"

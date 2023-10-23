@@ -57,10 +57,10 @@ def initial_table_platform_name_sentinel(db: Session):
     '''
     added_values = ['Sentinel-1', 'Sentinel-2', 'Sentinel-3', 'Sentinel-5 Precursor']
     for value in added_values:
-        search_result = crud.platform_name_sentinel.search(db=db,
-                                                           obj_in=schemas.PlatformNameSentinelSearch(name=value))
+        search_result = crud.platform_name.search(db=db,
+                                                           obj_in=schemas.PlatformNameSearch(name=value))
         if len(search_result) == 0:
-            crud.platform_name_sentinel.create(db=db, obj_in=schemas.PlatformNameSentinelCreate(name=value))
+            crud.platform_name.create(db=db, obj_in=schemas.PlatformNameCreate(name=value))
 
 
 def initial_table_type_polygons_to_search_for(db: Session):
@@ -83,6 +83,23 @@ def initial_table_type_polygons_to_search_for(db: Session):
         if len(search_result) == 0:
             crud.type_polygons_to_search_for.create(db=db, obj_in=schemas.TypePolygonsToSearchForSearch(
                 name=value))
+
+
+def initial_table_space_programs(db: Session):
+    '''
+    Функция для инициализации таблицы `space_table` дефолтными значениями
+
+    Parameters:
+    -------------
+    db: `Session`
+        Cинхронный класс сессии подключения к SQLAlchemy
+    '''
+    added_values = ['Sentinel',
+                    'Landsat']
+    for value in added_values:
+        search_result = crud.space_programs.search(db=db, obj_in=schemas.SpaceProgramsSearch(name=value))
+        if len(search_result) == 0:
+            crud.space_programs.create(db=db, obj_in=schemas.SpaceProgramsCreate(name=value))
 
 # async def initial_table_processing_level_sentinel(db: AsyncSession):
 #     # TODO: Добавить значения для поиска в API Copernicus

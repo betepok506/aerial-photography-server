@@ -5,8 +5,10 @@ import uvicorn
 from aerial_photography.config import settings
 from aerial_photography.utils.initial_default_db import (
     initial_table_platform_name_sentinel,
-    initial_table_type_polygons_to_search_for
+    initial_table_type_polygons_to_search_for,
+    initial_table_space_programs
 )
+from aerial_photography.api.v1.api import api_router
 from aerial_photography.database.base_class import Base
 from aerial_photography.database.session import engine, SessionLocal
 
@@ -51,6 +53,8 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
+app.include_router(api_router, prefix=settings.API_V1_STR)
+
 
 # app.include_router(v1_router, prefix="/api")
 # aerial_photography.include_router(v2_router, prefix="/api")
@@ -80,6 +84,7 @@ def initial_db():
     create_db_and_tables()
     initial_table_platform_name_sentinel(session)
     initial_table_type_polygons_to_search_for(session)
+    initial_table_space_programs(session)
 
 
 # TODO: Добавить реконнект в случае ошибки с базой через retry

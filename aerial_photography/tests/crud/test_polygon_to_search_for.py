@@ -8,7 +8,7 @@ from aerial_photography.schemas.polygons_to_search_for import (
     PolygonsToSearchForCreate, PolygonsToSearchForUpdate,
     PolygonsToSearchForSearch
 )
-from aerial_photography.schemas.platform_name_sentinel import PlatformNameSentinelCreate
+from aerial_photography.schemas.platform_name import PlatformNameCreate
 from aerial_photography.utils.geometry import convert_str_to_wkb, convert_polygon_to_str
 
 # Координаты тестового полигона
@@ -41,7 +41,6 @@ def test_create_polygons_to_search_for(db: Session) -> None:
     )
     polygon = crud.polygons_to_search_for.create(db=db, obj_in=polygon_in)
 
-    print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!! {polygon.date}')
     # assert str(polygon.footprint) == str(convert_wkb(str_polygon))
     assert polygon.cloud_cover_percentage == cloud_cover_percentage
     assert polygon.id_platform_name == id_platform_name
@@ -138,8 +137,8 @@ def test_search_type_polygons_to_search_for(db: Session) -> None:
     На данный момент поиск осуществляется только по платформе
     '''
     platform_name = random_lower_string()
-    platform_name_in = PlatformNameSentinelCreate(name=platform_name)
-    platform = crud.platform_name_sentinel.create(db=db, obj_in=platform_name_in)
+    platform_name_in = PlatformNameCreate(name=platform_name)
+    platform = crud.platform_name.create(db=db, obj_in=platform_name_in)
 
     str_polygon = convert_polygon_to_str(COORD)
     cloud_cover_percentage = [30, 60]

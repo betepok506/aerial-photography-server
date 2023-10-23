@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class SentinelImages(BaseModel):
-    platform_id: int
+    id_platform_name: int
     filename: str
     footprint: str
     identifier: str

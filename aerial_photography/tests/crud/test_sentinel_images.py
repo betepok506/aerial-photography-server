@@ -6,7 +6,7 @@ from aerial_photography.schemas.sentinel_images import (
     SentinelImagesCreate, SentinelImagesUpdate,
     SentinelImagesSearch
 )
-from aerial_photography.schemas.platform_name_sentinel import PlatformNameSentinelCreate
+from aerial_photography.schemas.platform_name import PlatformNameCreate
 from aerial_photography.utils.geometry import convert_str_to_wkb, convert_polygon_to_str
 
 # Координаты тестового полигона
@@ -25,12 +25,12 @@ def test_create_sentinel_images(db: Session) -> None:
     filename = random_lower_string(80)
     identifier = random_lower_string(90)
     str_polygon = convert_polygon_to_str(COORD)
-    platform_id = 1
+    id_platform_name = 1
     begin_position = datetime.datetime.now()
     end_position = datetime.datetime.now()
 
     images_in = SentinelImagesCreate(
-        platform_id=platform_id,
+        id_platform_name=id_platform_name,
         filename=filename,
         footprint=str_polygon,
         identifier=identifier,
@@ -39,7 +39,7 @@ def test_create_sentinel_images(db: Session) -> None:
     )
     image = crud.sentinel_images.create(db=db, obj_in=images_in)
 
-    assert image.platform_id == platform_id
+    assert image.id_platform_name == id_platform_name
     assert image.identifier == identifier
     assert image.filename == filename
     # assert image.begin_position == begin_position
@@ -51,12 +51,12 @@ def test_get_sentinel_images(db: Session) -> None:
     filename = random_lower_string(80)
     identifier = random_lower_string(90)
     str_polygon = convert_polygon_to_str(COORD)
-    platform_id = 1
+    id_platform_name = 1
     begin_position = datetime.datetime.now()
     end_position = datetime.datetime.now()
 
     images_in = SentinelImagesCreate(
-        platform_id=platform_id,
+        id_platform_name=id_platform_name,
         filename=filename,
         footprint=str_polygon,
         identifier=identifier,
@@ -67,7 +67,7 @@ def test_get_sentinel_images(db: Session) -> None:
 
     stored_image = crud.sentinel_images.get(db=db, id=image.id)
     assert stored_image
-    assert image.platform_id == stored_image.platform_id
+    assert image.id_platform_name == stored_image.id_platform_name
     assert image.filename == stored_image.filename
     assert image.identifier == stored_image.identifier
     # assert image.begin_position == stored_image.begin_position
@@ -78,12 +78,12 @@ def test_update_sentinel_images(db: Session) -> None:
     filename = random_lower_string(80)
     identifier = random_lower_string(90)
     str_polygon = convert_polygon_to_str(COORD)
-    platform_id = 1
+    id_platform_name = 1
     begin_position = datetime.datetime.now()
     end_position = datetime.datetime.now()
 
     image_in = SentinelImagesCreate(
-        platform_id=platform_id,
+        id_platform_name=id_platform_name,
         filename=filename,
         footprint=str_polygon,
         identifier=identifier,
@@ -96,7 +96,7 @@ def test_update_sentinel_images(db: Session) -> None:
     updated_date = datetime.datetime.now()
     updated_identifier = random_lower_string(90)
     image_update = SentinelImagesCreate(
-        platform_id=platform_id,
+        id_platform_name=id_platform_name,
         filename=filename,
         footprint=updated_str_polygon,
         identifier=updated_identifier,
@@ -108,7 +108,7 @@ def test_update_sentinel_images(db: Session) -> None:
     assert image.id == updated_image.id
     assert updated_image.identifier == updated_identifier
     assert updated_image.filename == filename
-    assert updated_image.platform_id == platform_id
+    assert updated_image.id_platform_name == id_platform_name
     # assert updated_image.begin_position == begin_position
     # assert updated_image.end_position == updated_date
 
@@ -117,12 +117,12 @@ def test_delete_sentinel_images(db: Session) -> None:
     filename = random_lower_string(80)
     identifier = random_lower_string(90)
     str_polygon = convert_polygon_to_str(COORD)
-    platform_id = 1
+    id_platform_name = 1
     begin_position = datetime.datetime.now()
     end_position = datetime.datetime.now()
 
     image_in = SentinelImagesCreate(
-        platform_id=platform_id,
+        id_platform_name=id_platform_name,
         filename=filename,
         footprint=str_polygon,
         identifier=identifier,
@@ -135,7 +135,7 @@ def test_delete_sentinel_images(db: Session) -> None:
     stored_image = crud.sentinel_images.get(db=db, id=image.id)
     assert stored_image is None
     assert removed_image.id == image.id
-    assert removed_image.platform_id == platform_id
+    assert removed_image.id_platform_name == id_platform_name
     assert removed_image.filename == filename
     assert removed_image.identifier == identifier
     # assert removed_image.begin_position == begin_position
@@ -149,8 +149,8 @@ def test_search_type_polygons_to_search_for(db: Session) -> None:
     '''
 
     platform_name = random_lower_string()
-    platform_name_in = PlatformNameSentinelCreate(name=platform_name)
-    platform = crud.platform_name_sentinel.create(db=db, obj_in=platform_name_in)
+    platform_name_in = PlatformNameCreate(name=platform_name)
+    platform = crud.platform_name.create(db=db, obj_in=platform_name_in)
 
     filename = random_lower_string(80)
     identifier = random_lower_string(90)
@@ -159,7 +159,7 @@ def test_search_type_polygons_to_search_for(db: Session) -> None:
     end_position = datetime.datetime.now()
 
     image_in = SentinelImagesCreate(
-        platform_id=platform.id,
+        id_platform_name=platform.id,
         filename=filename,
         footprint=str_polygon,
         identifier=identifier,
@@ -173,7 +173,7 @@ def test_search_type_polygons_to_search_for(db: Session) -> None:
 
     assert len(search_image) == 1
     assert search_image[0].id == image.id
-    assert search_image[0].platform_id == platform.id
+    assert search_image[0].id_platform_name == platform.id
     assert search_image[0].filename == filename
     assert search_image[0].identifier == identifier
     # assert search_image[0].begin_position == begin_position

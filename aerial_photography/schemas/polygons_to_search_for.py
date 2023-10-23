@@ -25,3 +25,4 @@ class PolygonsToSearchForSearch(BaseModel):
 
 class PolygonsToSearchForById(BaseModel):
     id: int
+

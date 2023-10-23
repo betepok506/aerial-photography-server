@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from sqlalchemy import select, and_
 # from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.encoders import jsonable_encoder
@@ -9,7 +9,7 @@ from aerial_photography.schemas.polygons_to_search_for import (
     PolygonsToSearchForCreate,
     PolygonsToSearchForUpdate,
     PolygonsToSearchForSearch)
-from aerial_photography.models.platform_name_sentinel import PlatformNameSentinel
+from aerial_photography.models.platform_name import PlatformName
 from aerial_photography.utils.geometry import convert_str_to_wkb, convert_wkb_to_str
 from geoalchemy2.elements import WKBElement
 
@@ -28,6 +28,7 @@ class CRUDPolygonsToSearchFor(
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        # db_obj.footprint = convert_wkb_to_str(db_obj.footprint)
         return db_obj
 
     def update(
@@ -54,13 +55,46 @@ class CRUDPolygonsToSearchFor(
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        db_obj.footprint = convert_wkb_to_str(db_obj.footprint)
         return db_obj
+
+    def get(self, db: Session, id: int) -> Union[PolygonsToSearchFor, None]:
+        result = db.scalars(select(self.model).filter(self.model.id == id).limit(1))
+        result = [item for item in result]
+        if len(result) == 0:
+            return None
+
+        result[0].footprint = convert_wkb_to_str(result[0].footprint)
+        return result[0]
+
+    def get_multi(
+            self, db: Session, *, skip: int = 0, limit: int = 100
+    ) -> List[PolygonsToSearchFor]:
+        result = db.scalars(select(self.model).offset(skip).limit(limit))
+        result = [item for item in result]
+        for ind in range(len(result)):
+            result[ind].footprint = convert_wkb_to_str(result[ind].footprint)
+
+        return result
+
+    def remove(self, db: Session, *, id: int) -> Union[PolygonsToSearchFor, None]:
+        obj = self.get(db=db, id=id)
+        if obj is None:
+            return None
+
+        db.delete(obj)
+        db.commit()
+        return obj
 
     def search(self, db: Session, *, obj_in: PolygonsToSearchForSearch) -> List[PolygonsToSearchFor]:
         result = db.scalars(
-            select(PolygonsToSearchFor).where(and_(PolygonsToSearchFor.id_platform_name == PlatformNameSentinel.id,
-                                                   PlatformNameSentinel.name == obj_in.platform_name)))
-        return [item for item in result]
+            select(PolygonsToSearchFor).where(and_(PolygonsToSearchFor.id_platform_name == PlatformName.id,
+                                                   PlatformName.name == obj_in.platform_name)))
+        result = [item for item in result]
+        for ind in range(len(result)):
+            result[ind].footprint = convert_wkb_to_str(result[ind].footprint)
+
+        return result
 
 
 polygons_to_search_for = CRUDPolygonsToSearchFor(PolygonsToSearchFor)

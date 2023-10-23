@@ -4,23 +4,23 @@ from sqlalchemy import select, and_
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from aerial_photography.crud.base import CRUDBase
-from aerial_photography.models.sentinel_images import SentinelImages
+from aerial_photography.models.sentinel_images import Images
 from aerial_photography.schemas.sentinel_images import (
     SentinelImagesCreate,
     SentinelImagesUpdate,
     SentinelImagesSearch)
-from aerial_photography.models.platform_name_sentinel import PlatformNameSentinel
+from aerial_photography.models.platform_name import PlatformName
 from aerial_photography.utils.geometry import convert_str_to_wkb, convert_wkb_to_str
 from geoalchemy2.elements import WKBElement
 
 
 class CRUDSentinelImages(
-    CRUDBase[SentinelImages, SentinelImagesCreate, SentinelImagesUpdate]):
+    CRUDBase[Images, SentinelImagesCreate, SentinelImagesUpdate]):
     '''
     Класс, реализующий функционал CRUD для таблицы `sentinel_images`
     '''
 
-    def create(self, db: Session, *, obj_in: SentinelImagesCreate) -> SentinelImages:
+    def create(self, db: Session, *, obj_in: SentinelImagesCreate) -> Images:
         obj_in_data = jsonable_encoder(obj_in)
         obj_in_data['footprint'] = convert_str_to_wkb(obj_in_data['footprint'])
 
@@ -34,9 +34,9 @@ class CRUDSentinelImages(
             self,
             db: Session,
             *,
-            db_obj: SentinelImages,
+            db_obj: Images,
             obj_in: SentinelImagesUpdate
-    ) -> SentinelImages:
+    ) -> Images:
         if isinstance(db_obj.footprint, WKBElement):
             db_obj.footprint = convert_wkb_to_str(db_obj.footprint)
 
@@ -56,11 +56,11 @@ class CRUDSentinelImages(
         db.refresh(db_obj)
         return db_obj
 
-    def search(self, db: Session, *, obj_in: SentinelImagesSearch) -> List[SentinelImages]:
+    def search(self, db: Session, *, obj_in: SentinelImagesSearch) -> List[Images]:
         result = db.scalars(
-            select(SentinelImages).where(and_(SentinelImages.platform_id == PlatformNameSentinel.id,
-                                              PlatformNameSentinel.name == obj_in.platform_name)))
+            select(Images).where(and_(Images.id_platform_name == PlatformName.id,
+                                      PlatformName.name == obj_in.platform_name)))
         return [item for item in result]
 
 
-sentinel_images = CRUDSentinelImages(SentinelImages)
+sentinel_images = CRUDSentinelImages(Images)
