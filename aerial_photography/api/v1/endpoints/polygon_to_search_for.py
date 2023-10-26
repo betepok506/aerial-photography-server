@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from aerial_photography.api.deps import get_db_session
 from aerial_photography import schemas
 from aerial_photography import crud
+import sqlalchemy
 
 router = APIRouter()
 
@@ -22,7 +23,7 @@ def create_polygon_to_search_for(
         polygon = crud.polygons_to_search_for.create(db=db, obj_in=polygon_in)
     except IntegrityError as foreign_key_exception:
         raise HTTPException(status_code=404, detail="The element being created refers to a non-existent element!")
-    except GEOSException as parse_exception:
+    except (GEOSException, sqlalchemy.exc.InternalError) as parse_exception:
         raise HTTPException(status_code=404, detail="The coordinates of the polygon are incorrectly specified!")
 
     return polygon
@@ -55,13 +56,13 @@ def update_polygon_to_search_for(
         updated_polygon = crud.polygons_to_search_for.update(db=db, db_obj=polygon, obj_in=polygon_in)
     except IntegrityError as foreign_key_exception:
         raise HTTPException(status_code=404, detail="The element being updated refers to a non-existent element!")
-    except GEOSException as parse_exception:
+    except (GEOSException, sqlalchemy.exc.InternalError) as parse_exception:
         raise HTTPException(status_code=404, detail="The coordinates of the polygon are incorrectly specified!")
 
     return updated_polygon
 
 
-@router.get("/get_polygon_to_search_for/{id}")
+@router.get("/get_polygon_to_search_for")
 def get_polygon_to_search_for(
         *,
         db: Session = Depends(get_db_session),
@@ -82,6 +83,19 @@ def get_polygons_to_search_for(
         limit: int = 100
 ):
     polygons = crud.polygons_to_search_for.get_multi(db=db, skip=skip, limit=limit)
+    if not polygons:
+        raise HTTPException(status_code=404, detail="Polygon not found")
+
+    return polygons
+
+
+@router.post("/get_non_downloaded_polygons_to_search_for")
+def get_non_downloaded_polygons_to_search_for(
+        *,
+        db: Session = Depends(get_db_session),
+        data_in: schemas.PolygonsToSearchForSearchByPrograms
+):
+    polygons = crud.polygons_to_search_for.search(db=db, obj_in=data_in)
     if not polygons:
         raise HTTPException(status_code=404, detail="Polygon not found")
 

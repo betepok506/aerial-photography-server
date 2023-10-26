@@ -7,7 +7,7 @@ services:
 #      context: ./../../
 #      dockerfile: ./docker/server/db.Dockerfile
     ports:
-      - '6500:5432'
+      - '${DATABASE_PORT}:5432'
     restart: always
     volumes:
       - aerial-photography-db-data:/var/lib/postgresql/data
@@ -21,6 +21,8 @@ services:
       - aerial-photography-db
     env_file:
       - ./../../.env
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -28,9 +30,11 @@ services:
       retries: 5
     build:
       context: ./../../
-      dockerfile: ./docker/tests/backend.Dockerfile
+      dockerfile: ./docker/server/backend.Dockerfile
     environment:
-      BACKEND_PORT: $(BACKEND_PORT)
+      BACKEND_PORT: ${BACKEND_PORT}
+      DATABASE_PORT: ${DATABASE_PORT}
+
 
     restart: always
 

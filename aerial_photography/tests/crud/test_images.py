@@ -2,9 +2,9 @@ import datetime
 from sqlalchemy.orm import Session
 from aerial_photography import crud
 from aerial_photography.tests.utils.utils import random_lower_string
-from aerial_photography.schemas.sentinel_images import (
-    SentinelImagesCreate, SentinelImagesUpdate,
-    SentinelImagesSearch
+from aerial_photography.schemas.images import (
+    ImagesCreate, ImagesUpdate,
+    ImagesSearch
 )
 from aerial_photography.schemas.platform_name import PlatformNameCreate
 from aerial_photography.utils.geometry import convert_str_to_wkb, convert_polygon_to_str
@@ -21,7 +21,7 @@ UPDATED_COORD = [(44.680385, 54.721345),
                  (44.392784, 56.779930)]
 
 
-def test_create_sentinel_images(db: Session) -> None:
+def test_create_images(db: Session) -> None:
     filename = random_lower_string(80)
     identifier = random_lower_string(90)
     str_polygon = convert_polygon_to_str(COORD)
@@ -29,7 +29,7 @@ def test_create_sentinel_images(db: Session) -> None:
     begin_position = datetime.datetime.now()
     end_position = datetime.datetime.now()
 
-    images_in = SentinelImagesCreate(
+    images_in = ImagesCreate(
         id_platform_name=id_platform_name,
         filename=filename,
         footprint=str_polygon,
@@ -37,7 +37,7 @@ def test_create_sentinel_images(db: Session) -> None:
         begin_position=begin_position,
         end_position=end_position,
     )
-    image = crud.sentinel_images.create(db=db, obj_in=images_in)
+    image = crud.images.create(db=db, obj_in=images_in)
 
     assert image.id_platform_name == id_platform_name
     assert image.identifier == identifier
@@ -47,7 +47,7 @@ def test_create_sentinel_images(db: Session) -> None:
     # assert image.end_position == end_position
 
 
-def test_get_sentinel_images(db: Session) -> None:
+def test_get_images(db: Session) -> None:
     filename = random_lower_string(80)
     identifier = random_lower_string(90)
     str_polygon = convert_polygon_to_str(COORD)
@@ -55,7 +55,7 @@ def test_get_sentinel_images(db: Session) -> None:
     begin_position = datetime.datetime.now()
     end_position = datetime.datetime.now()
 
-    images_in = SentinelImagesCreate(
+    images_in = ImagesCreate(
         id_platform_name=id_platform_name,
         filename=filename,
         footprint=str_polygon,
@@ -63,9 +63,9 @@ def test_get_sentinel_images(db: Session) -> None:
         begin_position=begin_position,
         end_position=end_position,
     )
-    image = crud.sentinel_images.create(db=db, obj_in=images_in)
+    image = crud.images.create(db=db, obj_in=images_in)
 
-    stored_image = crud.sentinel_images.get(db=db, id=image.id)
+    stored_image = crud.images.get(db=db, id=image.id)
     assert stored_image
     assert image.id_platform_name == stored_image.id_platform_name
     assert image.filename == stored_image.filename
@@ -74,7 +74,7 @@ def test_get_sentinel_images(db: Session) -> None:
     # assert image.end_position == stored_image.end_position
 
 
-def test_update_sentinel_images(db: Session) -> None:
+def test_update_images(db: Session) -> None:
     filename = random_lower_string(80)
     identifier = random_lower_string(90)
     str_polygon = convert_polygon_to_str(COORD)
@@ -82,7 +82,7 @@ def test_update_sentinel_images(db: Session) -> None:
     begin_position = datetime.datetime.now()
     end_position = datetime.datetime.now()
 
-    image_in = SentinelImagesCreate(
+    image_in = ImagesCreate(
         id_platform_name=id_platform_name,
         filename=filename,
         footprint=str_polygon,
@@ -90,12 +90,12 @@ def test_update_sentinel_images(db: Session) -> None:
         begin_position=begin_position,
         end_position=end_position,
     )
-    image = crud.sentinel_images.create(db=db, obj_in=image_in)
+    image = crud.images.create(db=db, obj_in=image_in)
 
     updated_str_polygon = convert_polygon_to_str(UPDATED_COORD)
     updated_date = datetime.datetime.now()
     updated_identifier = random_lower_string(90)
-    image_update = SentinelImagesCreate(
+    image_update = ImagesCreate(
         id_platform_name=id_platform_name,
         filename=filename,
         footprint=updated_str_polygon,
@@ -103,7 +103,7 @@ def test_update_sentinel_images(db: Session) -> None:
         begin_position=begin_position,
         end_position=updated_date,
     )
-    updated_image = crud.sentinel_images.update(db=db, db_obj=image, obj_in=image_update)
+    updated_image = crud.images.update(db=db, db_obj=image, obj_in=image_update)
 
     assert image.id == updated_image.id
     assert updated_image.identifier == updated_identifier
@@ -113,7 +113,7 @@ def test_update_sentinel_images(db: Session) -> None:
     # assert updated_image.end_position == updated_date
 
 
-def test_delete_sentinel_images(db: Session) -> None:
+def test_delete_images(db: Session) -> None:
     filename = random_lower_string(80)
     identifier = random_lower_string(90)
     str_polygon = convert_polygon_to_str(COORD)
@@ -121,7 +121,7 @@ def test_delete_sentinel_images(db: Session) -> None:
     begin_position = datetime.datetime.now()
     end_position = datetime.datetime.now()
 
-    image_in = SentinelImagesCreate(
+    image_in = ImagesCreate(
         id_platform_name=id_platform_name,
         filename=filename,
         footprint=str_polygon,
@@ -129,10 +129,10 @@ def test_delete_sentinel_images(db: Session) -> None:
         begin_position=begin_position,
         end_position=end_position,
     )
-    image = crud.sentinel_images.create(db=db, obj_in=image_in)
+    image = crud.images.create(db=db, obj_in=image_in)
 
-    removed_image = crud.sentinel_images.remove(db=db, id=image.id)
-    stored_image = crud.sentinel_images.get(db=db, id=image.id)
+    removed_image = crud.images.remove(db=db, id=image.id)
+    stored_image = crud.images.get(db=db, id=image.id)
     assert stored_image is None
     assert removed_image.id == image.id
     assert removed_image.id_platform_name == id_platform_name
@@ -143,7 +143,7 @@ def test_delete_sentinel_images(db: Session) -> None:
 
 
 # @pytest.mark.asyncio
-def test_search_type_polygons_to_search_for(db: Session) -> None:
+def test_search_images(db: Session) -> None:
     '''
     На данный момент поиск осуществляется только по платформе
     '''
@@ -158,7 +158,7 @@ def test_search_type_polygons_to_search_for(db: Session) -> None:
     begin_position = datetime.datetime.now()
     end_position = datetime.datetime.now()
 
-    image_in = SentinelImagesCreate(
+    image_in = ImagesCreate(
         id_platform_name=platform.id,
         filename=filename,
         footprint=str_polygon,
@@ -166,9 +166,9 @@ def test_search_type_polygons_to_search_for(db: Session) -> None:
         begin_position=begin_position,
         end_position=end_position,
     )
-    image = crud.sentinel_images.create(db=db, obj_in=image_in)
+    image = crud.images.create(db=db, obj_in=image_in)
 
-    search_image = crud.sentinel_images.search(db=db, obj_in=SentinelImagesSearch(
+    search_image = crud.images.search(db=db, obj_in=ImagesSearch(
         platform_name=platform_name))
 
     assert len(search_image) == 1

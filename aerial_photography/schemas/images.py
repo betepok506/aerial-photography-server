@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class SentinelImages(BaseModel):
+class Images(BaseModel):
     id_platform_name: int
     filename: str
     footprint: str
@@ -12,17 +12,17 @@ class SentinelImages(BaseModel):
     end_position: datetime
 
 
-class SentinelImagesCreate(SentinelImages):
+class ImagesCreate(Images):
     pass
 
 
-class SentinelImagesUpdate(SentinelImagesCreate):
+class ImagesUpdate(ImagesCreate):
     id: int
 
 
-class SentinelImagesSearch(BaseModel):
+class ImagesSearch(BaseModel):
     platform_name: str
 
 
-class SentinelImagesSearchById(BaseModel):
+class ImagesSearchById(BaseModel):
     id: int

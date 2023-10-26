@@ -30,11 +30,17 @@ def test_create_polygons_to_search_for(db: Session) -> None:
     cloud_cover_percentage = [30, 60]
     id_platform_name = 1
     id_polygon_type = 1
+    need_to_download = 5
+    id_space_program = 1
+    current_downloaded = 0
     date = datetime.datetime.now()
 
     polygon_in = PolygonsToSearchForCreate(
         id_platform_name=id_platform_name,
         id_polygon_type=id_polygon_type,
+        id_space_program=id_space_program,
+        current_downloaded=current_downloaded,
+        need_to_download=need_to_download,
         footprint=str_polygon,
         cloud_cover_percentage=cloud_cover_percentage,
         date=date
@@ -45,6 +51,9 @@ def test_create_polygons_to_search_for(db: Session) -> None:
     assert polygon.cloud_cover_percentage == cloud_cover_percentage
     assert polygon.id_platform_name == id_platform_name
     assert polygon.id_polygon_type == id_polygon_type
+    assert polygon.id_space_program == id_space_program
+    assert polygon.current_downloaded == current_downloaded
+    assert polygon.need_to_download == need_to_download
     # assert polygon.date == date
 
 
@@ -53,11 +62,17 @@ def test_get_polygons_to_search_for(db: Session) -> None:
     cloud_cover_percentage = [30, 60]
     id_platform_name = 1
     id_polygon_type = 1
+    need_to_download = 5
+    id_space_program = 1
+    current_downloaded = 0
     date = datetime.datetime.now()
 
     polygon_in = PolygonsToSearchForCreate(
         id_platform_name=id_platform_name,
         id_polygon_type=id_polygon_type,
+        id_space_program=id_space_program,
+        current_downloaded=current_downloaded,
+        need_to_download=need_to_download,
         footprint=str_polygon,
         cloud_cover_percentage=cloud_cover_percentage,
         date=date
@@ -66,8 +81,12 @@ def test_get_polygons_to_search_for(db: Session) -> None:
 
     stored_polygon = crud.polygons_to_search_for.get(db=db, id=polygon.id)
     assert stored_polygon
+    assert polygon.footprint == stored_polygon.footprint
     assert polygon.id_platform_name == stored_polygon.id_platform_name
     assert polygon.id_polygon_type == stored_polygon.id_polygon_type
+    assert polygon.id_space_program == stored_polygon.id_space_program
+    assert polygon.current_downloaded == stored_polygon.current_downloaded
+    assert polygon.need_to_download == stored_polygon.need_to_download
     assert polygon.cloud_cover_percentage == stored_polygon.cloud_cover_percentage
 
 
@@ -76,11 +95,17 @@ def test_update_polygons_to_search_for(db: Session) -> None:
     cloud_cover_percentage = [30, 60]
     id_platform_name = 1
     id_polygon_type = 1
+    need_to_download = 5
+    id_space_program = 1
+    current_downloaded = 0
     date = datetime.datetime.now()
 
     polygon_in = PolygonsToSearchForCreate(
         id_platform_name=id_platform_name,
         id_polygon_type=id_polygon_type,
+        id_space_program=id_space_program,
+        current_downloaded=current_downloaded,
+        need_to_download=need_to_download,
         footprint=str_polygon,
         cloud_cover_percentage=cloud_cover_percentage,
         date=date
@@ -93,6 +118,9 @@ def test_update_polygons_to_search_for(db: Session) -> None:
         id_platform_name=id_platform_name,
         id=polygon.id,
         footprint=updated_str_polygon,
+        id_space_program=id_space_program,
+        current_downloaded=current_downloaded,
+        need_to_download=need_to_download,
         cloud_cover_percentage=cloud_cover_percentage,
         date=updated_date,
         id_polygon_type=id_polygon_type
@@ -102,6 +130,9 @@ def test_update_polygons_to_search_for(db: Session) -> None:
     assert polygon.id == updated_polygon.id
     assert updated_polygon.id_polygon_type == id_polygon_type
     assert updated_polygon.cloud_cover_percentage == cloud_cover_percentage
+    assert updated_polygon.id_space_program == id_space_program
+    assert updated_polygon.current_downloaded == current_downloaded
+    assert updated_polygon.need_to_download == need_to_download
     assert updated_polygon.id_platform_name == id_platform_name
 
 
@@ -110,11 +141,17 @@ def test_delete_polygons_to_search_for(db: Session) -> None:
     cloud_cover_percentage = [30, 60]
     platform_name = 1
     type_polygon = 1
+    need_to_download = 5
+    id_space_program = 1
+    current_downloaded = 0
     date = datetime.datetime.now()
 
     polygon_in = PolygonsToSearchForCreate(
         id_platform_name=platform_name,
         id_polygon_type=type_polygon,
+        id_space_program=id_space_program,
+        current_downloaded=current_downloaded,
+        need_to_download=need_to_download,
         footprint=str_polygon,
         cloud_cover_percentage=cloud_cover_percentage,
         date=date
@@ -127,6 +164,9 @@ def test_delete_polygons_to_search_for(db: Session) -> None:
     assert removed_polygon.id == polygon.id
     assert removed_polygon.id_platform_name == platform_name
     assert removed_polygon.id_polygon_type == type_polygon
+    assert removed_polygon.id_space_program == id_space_program
+    assert removed_polygon.current_downloaded == current_downloaded
+    assert removed_polygon.need_to_download == need_to_download
     # assert removed_polygon.footprint == wkb_polygon
     assert removed_polygon.cloud_cover_percentage == cloud_cover_percentage
     # assert removed_polygon.date == date
@@ -143,11 +183,17 @@ def test_search_type_polygons_to_search_for(db: Session) -> None:
     str_polygon = convert_polygon_to_str(COORD)
     cloud_cover_percentage = [30, 60]
     id_polygon_type = 1
+    need_to_download = 5
+    id_space_program = 1
+    current_downloaded = 0
     date = datetime.datetime.now()
 
     polygon_in = PolygonsToSearchForCreate(
         id_platform_name=platform.id,
         id_polygon_type=id_polygon_type,
+        id_space_program=id_space_program,
+        current_downloaded=current_downloaded,
+        need_to_download=need_to_download,
         footprint=str_polygon,
         cloud_cover_percentage=cloud_cover_percentage,
         date=date
@@ -160,6 +206,9 @@ def test_search_type_polygons_to_search_for(db: Session) -> None:
     assert search_polygon[0].id == polygon.id
     assert search_polygon[0].id_platform_name == platform.id
     assert search_polygon[0].id_polygon_type == id_polygon_type
+    assert search_polygon[0].id_space_program == id_space_program
+    assert search_polygon[0].current_downloaded == current_downloaded
+    assert search_polygon[0].need_to_download == need_to_download
     # assert search_polygon.footprint == wkb_polygon
     assert search_polygon[0].cloud_cover_percentage == cloud_cover_percentage
     # assert search_polygon.date == date
