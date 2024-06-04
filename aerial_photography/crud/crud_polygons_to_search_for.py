@@ -4,12 +4,13 @@ from sqlalchemy import select, and_
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from aerial_photography.crud.base import CRUDBase
+from sqlalchemy import func
 from aerial_photography.models.polygons_to_search_for import PolygonsToSearchFor
 from aerial_photography.schemas.polygons_to_search_for import (
     PolygonsToSearchForCreate,
-    PolygonsToSearchForUpdate,
-    PolygonsToSearchForSearch,
-    PolygonsToSearchForSearchByPrograms)
+    PolygonsToSearchForUpdate)
+# PolygonsToSearchForSearch,
+# PolygonsToSearchForSearchByPrograms)
 from aerial_photography.models.platform_name import PlatformName
 from aerial_photography.models.space_programs import SpacePrograms
 from aerial_photography.utils.geometry import convert_str_to_wkb, convert_wkb_to_str
@@ -93,26 +94,9 @@ class CRUDPolygonsToSearchFor(
         db.commit()
         return obj
 
-    def search(self, db: Session, *,
-               obj_in: Union[PolygonsToSearchForSearch,
-               PolygonsToSearchForSearchByPrograms]) -> List[PolygonsToSearchFor]:
-
-        queries = []
-        if isinstance(obj_in, PolygonsToSearchForSearch):
-            queries.append(PolygonsToSearchFor.id_platform_name == PlatformName.id)
-            queries.append(PlatformName.name == obj_in.platform_name)
-
-        elif isinstance(obj_in, PolygonsToSearchForSearchByPrograms):
-            queries.append(PolygonsToSearchFor.id_space_program == SpacePrograms.id)
-            queries.append(SpacePrograms.name == obj_in.name_space_program)
-            queries.append(PolygonsToSearchFor.current_downloaded < PolygonsToSearchFor.need_to_download)
-
-        else:
-            raise NotImplemented("The scheme for the search is not recognized!")
-
-        result = db.scalars(select(PolygonsToSearchFor).where(*queries))
-        result = [item for item in result]
-        return result
+    def get_count(self, db: Session):
+        counts = db.query(func.count(self.model.id)).scalar()
+        return counts
 
 
 polygons_to_search_for = CRUDPolygonsToSearchFor(PolygonsToSearchFor)

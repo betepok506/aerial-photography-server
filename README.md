@@ -41,6 +41,17 @@
 bash ./tools/run_server.sh
 ```
 
+# Запуск Docker
+
+Перед запуском контейнера необходимо создать сеть
+```
+docker network create network-aerial-photography
+```
+Запуск
+```
+docker-compose --env-file .env -f ./docker/server/docker-compose.yaml up --build
+```
+
 Для локального запуска необходимо установить все зависимости, выполнив команду:
 
 ```commandline

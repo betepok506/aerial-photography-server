@@ -83,20 +83,19 @@ def get_polygons_to_search_for(
         limit: int = 100
 ):
     polygons = crud.polygons_to_search_for.get_multi(db=db, skip=skip, limit=limit)
-    if not polygons:
-        raise HTTPException(status_code=404, detail="Polygon not found")
-
-    return polygons
-
-
-@router.post("/get_non_downloaded_polygons_to_search_for")
-def get_non_downloaded_polygons_to_search_for(
-        *,
-        db: Session = Depends(get_db_session),
-        data_in: schemas.PolygonsToSearchForSearchByPrograms
-):
-    polygons = crud.polygons_to_search_for.search(db=db, obj_in=data_in)
-    if not polygons:
-        raise HTTPException(status_code=404, detail="Polygon not found")
-
-    return polygons
+    # if not polygons:
+    #     raise HTTPException(status_code=404, detail="Polygon not found")
+    return {'polygons': polygons, 'counts': len(polygons), 'limit': limit, "skip": skip}
+#
+#
+# @router.post("/get_non_downloaded_polygons_to_search_for")
+# def get_non_downloaded_polygons_to_search_for(
+#         *,
+#         db: Session = Depends(get_db_session),
+#         data_in: schemas.PolygonsToSearchForSearchByPrograms
+# ):
+#     polygons = crud.polygons_to_search_for.search(db=db, obj_in=data_in)
+#     if not polygons:
+#         raise HTTPException(status_code=404, detail="Polygon not found")
+#
+#     return polygons

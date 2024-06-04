@@ -15,6 +15,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - network-aerial-photography
 
   aerial-photography-backend:
     depends_on:
@@ -22,7 +24,7 @@ services:
     env_file:
       - ./../../.env
     ports:
-      - ${BACKEND_PORT}:${BACKEND_PORT}
+      - '${BACKEND_PORT}:${BACKEND_PORT}'
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -31,12 +33,18 @@ services:
     build:
       context: ./../../
       dockerfile: ./docker/server/backend.Dockerfile
+      args:
+        BACKEND_PORT: ${BACKEND_PORT}
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
       DATABASE_PORT: ${DATABASE_PORT}
-
-
     restart: always
+    networks:
+      - network-aerial-photography
 
 volumes:
   aerial-photography-db-data:
+
+networks:
+  network-aerial-photography:
+    external: true

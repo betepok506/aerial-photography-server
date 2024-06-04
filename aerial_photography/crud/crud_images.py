@@ -89,5 +89,9 @@ class CRUDImages(
                                       PlatformName.name == obj_in.platform_name)))
         return [item for item in result]
 
+    def intersection(self, db: Session, *, obj_in: ImagesSearch):
+        pass
+
+
 
 images = CRUDImages(Images)

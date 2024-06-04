@@ -18,4 +18,4 @@ docker-compose -f docker-stack.yml up -d
 chmod +x $(pwd)/aerial_photography/tests-start.sh
 
 docker-compose -f docker-stack.yml exec -T aerial-photography-backend bash aerial_photography/tests-start.sh
-#docker-compose -f docker-stack.yml down -v --remove-orphans
+docker-compose -f docker-stack.yml down -v --remove-orphans

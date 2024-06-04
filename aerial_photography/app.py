@@ -34,19 +34,6 @@ def create_db_and_tables():
     Base.metadata.create_all(bind=engine)
 
 
-# @event.listens_for(PlatformNameSentinel.__table__, 'after_create')
-# def insert_initial_values(target,
-#                           connection: AsyncSession = Depends(get_db_session),
-#                           **kwargs):
-#     print(f' {target}')
-#     connection.execute(insert(PlatformNameSentinel.__table__).values(name="low"))
-#     connection.execute(insert(PlatformNameSentinel.__table__).values(name="medium"))
-#     connection.execute(insert(PlatformNameSentinel.__table__).values(name="Morro Bay"))
-#     # connection.commit()
-#     # connection.close()
-#     print("insert_initial_values success calling db func: ")
-
-
 app = FastAPI(
     title=settings.PROJECT_NAME,
     docs_url="/api/docs",
@@ -54,29 +41,6 @@ app = FastAPI(
 )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
-
-
-# app.include_router(v1_router, prefix="/api")
-# aerial_photography.include_router(v2_router, prefix="/api")
-
-# ======== Async ============
-# @app.on_event("startup")
-# async def initial_db():
-#     session = SessionLocal()
-#     await create_db_and_tables()
-#     await initial_table_platform_name_sentinel(session)
-#     await initial_table_type_polygons_to_search_for(session)
-# await crud.platform_name_sentinel.create(db=session, obj_in=schemas.PlatformNameSentinelCreate(name='test_create2'))
-# print(await crud.platform_name_sentinel.get(db=session, id=1))
-# tt = await crud.platform_name_sentinel.get(db=session, id=7)
-# print(await crud.platform_name_sentinel.remove(db=session, id=1))
-
-# await crud.platform_name_sentinel.update(db=session,
-#                                          db_obj=tt,
-#                                          obj_in=schemas.PlatformNameSentinel(name='gg'))
-
-# print('Initialization completed successfully!')
-# models.Base.metadata.create_all(bind=engine)
 
 @app.on_event("startup")
 def initial_db():
@@ -90,5 +54,5 @@ def initial_db():
 # TODO: Добавить реконнект в случае ошибки с базой через retry
 # TODO: Добавить закрытие соединения после завершения транзакции
 
-if __name__ == "__main__":
-    uvicorn.run("aerial_photography.app:app", port=8001, log_level="info", reload=True)
+# if __name__ == "__main__":
+#     uvicorn.run("aerial_photography.app:app", port=8001, log_level="info", reload=True)
