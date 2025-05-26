@@ -1,0 +1,1 @@
+from aerial_photography.models.platform_name_sentinel import PlatformNameSentinel

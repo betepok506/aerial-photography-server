@@ -2,44 +2,57 @@ import base64
 
 import uvicorn
 
-from database import models
+from app.database import models
 from fastapi import FastAPI
-from fastapi.responses import FileResponse, Response, StreamingResponse
+from fastapi.responses import Response
 from sqlalchemy.exc import SQLAlchemyError
 from geoalchemy2.shape import from_shape
 from shapely.geometry import Polygon
 import json
-from sqlalchemy import create_engine, Column, Integer, func, and_, tuple_
-from fastapi.middleware.cors import CORSMiddleware
-from database.models import (
+from sqlalchemy import and_, tuple_, insert
+from app.database.models import (
     PoiPolygon,
     ClassObjectDisplay,
     Maps,
     Tiles,
-    NeuralNetwork,
-    DetectedObjects
+    PlatformNameSentinel
 )
 import numpy as np
 import io
 from PIL import Image
 
-from database.db import engine
+from app.database import engine
 from sqlalchemy.orm import sessionmaker
 from shapely import wkb
 from app.globalmaptiles import GlobalMercator
-from app.schemas import (
+from app.api.schemas import (
     RequestPolygonsObject,
     TilesSchemas,
-    Tile,
     RequestsRawTiles,
     MapInfo
 )
+from sqlalchemy import event
 
-models.Base.metadata.create_all(bind=engine)
 Session = sessionmaker(bind=engine)
 db = Session()
 
+
+@event.listens_for(PlatformNameSentinel.__table__, 'after_create')
+def insert_initial_values(target, connection, **kwargs):
+    connection.execute(insert(PlatformNameSentinel.__table__).values(platform_name="low"))
+    connection.execute(insert(PlatformNameSentinel.__table__).values(platform_name="medium"))
+    connection.execute(insert(PlatformNameSentinel.__table__).values(platform_name="Morro Bay"))
+    print("insert_initial_values success calling db func: ")
+
+
+# event.listen(PlatformNameSentinel.__table__, 'after_create', insert_initial_values)
+
 app = FastAPI()
+
+
+@app.on_event("startup")
+def configure():
+    models.Base.metadata.create_all(bind=engine)
 
 
 def db_persist(func):
@@ -59,6 +72,9 @@ def db_persist(func):
             Session.close()
 
     return persist
+
+
+# @event.listens_for(PlatformNameSentinel.__table__, 'create')
 
 
 @app.get("/get_bbox_object/")
@@ -505,4 +521,4 @@ def root():
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port=8001, log_level="info", reload=True)
+    uvicorn.run("main:aerial_photography", port=8001, log_level="info", reload=True)

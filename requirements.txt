@@ -1,9 +1,26 @@
-sqlalchemy
-fastapi
-uvicorn
-fastapi_health
-alembic
-psycopg2
-geoalchemy2
-shapely
+sqlalchemy>=2.0.22
+fastapi>=0.100.0
+uvicorn>=0.22.0
+fastapi_health>=0.4.0
+alembic>=1.11.1
+geoalchemy2>=0.14.0
+shapely>=2.0.1
 pillow
+pydantic-settings>=2.0.3
+httpx>=0.25.0
+
+# Async Postgres
+# asyncpg
+
+# Sync PG
+psycopg2-binary
+# psycopg2
+
+
+# Retry
+tenacity>=8.2.3
+
+# Testing
+pytest>=7.4.2
+pytest-cov>=4.1.0
+pytest_asyncio>=0.21.1
